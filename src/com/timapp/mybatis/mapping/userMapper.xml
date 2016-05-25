@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+例如namespace="com.timapp.mybatis.mapping.userMapper"就是com.timapp.mybatis.mapping(包名)+userMapper(userMapper.xml文件去除后缀)
+ -->
+ 
+ <!-- 前面已经讲到用接口的方式编程。这种方式，要注意的一个地方就是。在User.xml  的配置文件中，mapper namespace="com.timapp.mybatis.dao.UserDao" ，命名空间非常重要，不能有错，必须与我们定义的package 和 接口一致。如果不一致就会出错 -->
+<mapper namespace="com.timapp.mybatis.dao.UserDao">
+    <!-- 在select标签中编写查询的SQL语句， 设置select标签的id属性为getUser，id属性值必须是唯一的，不能够重复
+                 使用parameterType属性指明查询时使用的参数类型，resultType属性指明查询返回的结果集类型
+    resultType="com.timapp.mybatis.domain.User"就表示将查询结果封装成一个User类的对象返回
+    User类就是users表所对应的实体类
+    -->
+    
+    <!-- 根据id查询得到一个user对象(当字段不一样需要将实体字段作为数据库字段的别名)-->
+    <select id="getUser" parameterType="string"
+        resultType="com.timapp.mybatis.domain.User" resultMap="userResultMap">
+        select * from blog_ot_user where id=#{id}
+    </select>
+    <!-- 新增用户 -->
+    <insert id="addUser" parameterType="com.timapp.mybatis.domain.User" flushCache="true">  
+	   INSERT INTO blog_ot_user (ID,USER_NAME,USER_AGE) VALUES (#{id},#{name},#{age})  
+	</insert> 
+	<!-- 更新用户 --> 
+	<update id="updateUser" parameterType="com.timapp.mybatis.domain.User">  
+	    UPDATE blog_ot_user SET USER_NAME=#{name} ,USER_AGE=#{age} WHERE id=#{id}  
+	</update>  
+	<!-- 删除用户 -->
+	<delete id="deleteUser" parameterType="string">  
+	    DELETE FROM blog_ot_user WHERE id=#{id}  
+	</delete>
+	  
+    <!-- 查询用户列表-->
+	<select id="getUserList"  parameterType="string"  resultMap="userResultMap">  
+	    select * from blog_ot_user where USER_NAME like #{name}
+	</select>
+    
+    
+     <!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+     <resultMap type="com.timapp.mybatis.domain.User" id="userResultMap">
+         <!-- 用id属性来映射主键字段 -->
+         <id property="id" column="ID"/>
+         <!-- 用result属性来映射非主键字段 -->
+         <result property="name" column="USER_NAME"/>
+         <result property="age" column="USER_AGE"/>
+     </resultMap>
+</mapper>
